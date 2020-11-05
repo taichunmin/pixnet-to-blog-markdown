@@ -4,8 +4,11 @@
 
 ## 安裝
 
+* 安裝 `node v14+` 以及 `yarn` 後，執行以下指令:
+
 ```bash
 git clone https://github.com/taichunmin/pixnet-to-blog-markdown.git
+cd pixnet-to-blog-markdown
 yarn
 ```
 
@@ -16,3 +19,5 @@ yarn
 ```bash
 yarn build
 ```
+
+處理完成的檔案會放於 `out/` 資料夾下。
