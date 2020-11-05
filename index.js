@@ -8,10 +8,18 @@ const transliteration = require('transliteration')
 const TurndownService = require('turndown')
 const yaml = require('yaml')
 
+const HIGHLIGHT_MAP = {
+  'C++': 'cpp',
+  cpp: 'cpp',
+  java: 'java',
+  javascript: 'js',
+}
+
 const turndown = new TurndownService({
+  codeBlockStyle: 'fenced',
   headingStyle: 'atx',
   hr: '- - -',
-})
+}).remove('script')
 
 require('debug').formatters.e = (() => {
   const ERROR_KEYS = [
@@ -72,6 +80,11 @@ ${article.body}`
 
 async function convertPixelArticle (outDir, article) {
   try {
+    // 處理 textarea.C++
+    article = article.replace(/<textarea[^>]*?class="([^"]+)"[^>]*?>((?:.|\n)+?)<\/textarea>/g, (match, p1, p2) => {
+      if (!HIGHLIGHT_MAP[p1]) log(`HIGHLIGHT_MAP 缺少 ${p1}`)
+      return `<pre><code class="language-${_.get(HIGHLIGHT_MAP, p1, p1)}">${_.trim(p2)}</code></pre>`
+    })
     article = pixelArticleParse(article)
     if (_.get(article, 'status', 'draft') === 'draft') return
     await fsPromises.writeFile(`${outDir}${article.filename}.md`, markdownStringify(article), { encoding: 'utf8' })
