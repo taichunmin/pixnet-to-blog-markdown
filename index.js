@@ -10,9 +10,11 @@ const yaml = require('yaml')
 
 const HIGHLIGHT_MAP = {
   'C++': 'cpp',
+  c: 'cpp',
   cpp: 'cpp',
   java: 'java',
   javascript: 'js',
+  php: 'php',
 }
 
 const turndown = new TurndownService({
@@ -82,6 +84,11 @@ async function convertPixelArticle (outDir, article) {
   try {
     // 處理 textarea.C++
     article = article.replace(/<textarea[^>]*?class="([^"]+)"[^>]*?>((?:.|\n)+?)<\/textarea>/g, (match, p1, p2) => {
+      if (!HIGHLIGHT_MAP[p1]) log(`HIGHLIGHT_MAP 缺少 ${p1}`)
+      return `<pre><code class="language-${_.get(HIGHLIGHT_MAP, p1, p1)}">${_.trim(p2)}</code></pre>`
+    })
+    // 處理 pre.brush
+    article = article.replace(/<pre[^>]*?class="brush: ([^;]+)[^"]+"[^>]*?>((?:.|\n)+?)<\/pre>/g, (match, p1, p2) => {
       if (!HIGHLIGHT_MAP[p1]) log(`HIGHLIGHT_MAP 缺少 ${p1}`)
       return `<pre><code class="language-${_.get(HIGHLIGHT_MAP, p1, p1)}">${_.trim(p2)}</code></pre>`
     })
